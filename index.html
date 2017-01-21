@@ -1,0 +1,117 @@
+<script src="../microgear.js"></script>
+
+
+<script>
+	const APPKEY = "APPKEY";
+	const APPSECRET = "APPSECRET";
+	const APPID = "APPID";
+
+
+	var microgear = Microgear.create({
+		gearkey: APPKEY,
+		gearsecret: APPSECRET
+	});
+
+	microgear.on('message',function(topic,data)
+	 {
+	if
+		(data=="Status= ON"||data=="Status= OFF"){
+		document.getElementById("data4").innerHTML = data;
+	}else if
+		(data=="Connected"){
+		document.getElementById("data").innerHTML = data;
+	}else{
+		var split_msg = data.split(",");
+		var a = parseInt(split_msg[0]);
+		document.getElementById("data1").innerHTML = "Flowing: "+a+" mL/Sec";
+
+		var split_msg = data.split(",");
+		var b = parseInt(split_msg[1]);
+		document.getElementById("data2").innerHTML = "Quantity: "+b+" mL" ;
+
+		var c = parseInt(split_msg[2]);;
+		document.getElementById("data3").innerHTML =  "Humidity: "+c+ " %";
+	}
+
+
+	});
+
+	microgear.on('connected', function() {
+		microgear.setname('Autowater_HTML5');
+		document.getElementById("data").innerHTML = "Now I am connected with netpie...";
+		
+	});
+
+	microgear.on('present', function(event) {
+		console.log(event);
+	});
+
+	microgear.on('absent', function(event) {
+		console.log(event);
+	});
+
+	microgear.resettoken();
+	microgear.connect(APPID);
+</script>
+<html>
+<meta charset="utf-8">
+<body background="black.jpg">
+
+<center><font color="#FFFAFA">	<div id="data">_____</div>
+		<font color="Gold">	<div id="data1">_____</div></font>
+		<font color="Cyan">	<div id="data2">_____</div></font>
+		<font color="Green"> 	<div id="data3">_____</div></font>
+		<font color="red">	<div id="data4">_____</div></font>
+
+
+<br><input type="button" value="Auto mode" onclick="Auto()"style="background-color:#00BFFF">
+<input type="button" value="Manual mode" onclick="Manual()"style="background-color:#00BFFF">
+	<br><br><input  type="button" value="ON" onclick="ON()" id="on" style="background-color:#00FF00">
+			<input type="button" value="OFF" onclick="OFF()" id="off" style="background-color:#FF4500">
+	
+	<div id="AA"> 
+<font color="#00FF00">Moisture of Soil:(%)<br></font>
+<input maxlength=2 type="text" name="moisture" id="moisture" onchange="moisture()"style="background-color:#FFE4E1"onKeyUp="if(isNaN(this.value)){ alert('กรุณาใส่ตัวเลขเท่านั้น!!!'); this.value='';}">
+<br>
+<font color="#FF4500">Water Quantity:(mL)<br></font>
+<input maxlength=4 type="text" name="quantity" id="quantity" onchange="quantity()"style="background-color:#FFE4E1"onKeyUp="if(isNaN(this.value)){ alert('กรุณาใส่ตัวเลขเท่านั้น!!!'); this.value='';}">
+<br><br>
+
+</div>
+</body>
+</html>
+
+<script>
+	function Manual(){
+		document.getElementById('AA').style.visibility = 'hidden';
+		document.getElementById('on').style.visibility = 'visible';
+		document.getElementById('off').style.visibility = 'visible';
+		microgear.chat("Autowater_Arduino","M");
+	}
+	function Auto(){
+		document.getElementById('AA').style.visibility = 'visible';
+		document.getElementById('on').style.visibility = 'hidden';
+		document.getElementById('off').style.visibility = 'hidden';
+		microgear.chat("Autowater_Arduino","A");
+	}
+	function ON(){
+		microgear.chat("Autowater_Arduino","N");
+
+	}function OFF(){
+		microgear.chat("Autowater_Arduino","F");
+	}
+	function moisture(){
+		alert("Done");
+		microgear.chat("Autowater_Arduino","S"+document.getElementById('moisture').value);
+		
+
+	}
+	function quantity(){
+		alert("Done");
+		microgear.chat("Autowater_Arduino","Q"+document.getElementById('quantity').value);
+		
+	}
+		document.getElementById('on').style.visibility = 'hidden';
+		document.getElementById('off').style.visibility = 'hidden';
+		document.getElementById('AA').style.visibility = 'hidden';
+</script >
